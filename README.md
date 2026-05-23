@@ -10,8 +10,8 @@
 ## 本地更新
 
 ```bash
-python3 -m venv .venv
-. .venv/bin/activate
+python3 -m venv ~/.venvs/lottery-data
+. ~/.venvs/lottery-data/bin/activate
 pip install -r requirements.txt -r requirements-dev.txt
 pytest -q
 python scripts/update_lottery_data.py
