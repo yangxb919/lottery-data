@@ -12,7 +12,8 @@
 ```bash
 python3 -m venv .venv
 . .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements.txt -r requirements-dev.txt
+pytest -q
 python scripts/update_lottery_data.py
 ```
 
@@ -22,6 +23,14 @@ python scripts/update_lottery_data.py
 data/ssq.json      # 双色球历史，最新在前
 data/dlt.json      # 大乐透历史，最新在前
 data/latest.json   # 两种彩票最新一期汇总
+```
+
+Raw JSON：
+
+```text
+https://raw.githubusercontent.com/yangxb919/lottery-data/main/data/ssq.json
+https://raw.githubusercontent.com/yangxb919/lottery-data/main/data/dlt.json
+https://raw.githubusercontent.com/yangxb919/lottery-data/main/data/latest.json
 ```
 
 ## 自动更新

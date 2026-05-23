@@ -19,7 +19,7 @@ import re
 import sys
 import time
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Iterable, List
 
@@ -225,8 +225,12 @@ def update_one(code: str, end_issue: str) -> Dict[str, Any]:
 
 
 def write_latest(summary: List[Dict[str, Any]]) -> None:
+    """Write a stable latest summary.
+
+    Do not include the current timestamp here; otherwise scheduled runs would
+    create a Git commit every day even when no new lottery draw was published.
+    """
     latest = {
-        "generated_at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "source": SOURCE,
         "lotteries": {item["code"]: item["latest"] for item in summary},
         "summary": [
