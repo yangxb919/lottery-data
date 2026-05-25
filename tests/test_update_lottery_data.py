@@ -96,3 +96,46 @@ def test_write_latest_is_stable_when_no_new_draw(tmp_path, monkeypatch):
     data = json.loads(first)
     assert "generated_at_utc" not in data
     assert data["summary"][0]["latest_issue"] == "26057"
+
+
+def test_build_latest_summary_keeps_existing_other_lottery_on_partial_update(tmp_path, monkeypatch):
+    monkeypatch.setattr(upd, "DATA_DIR", tmp_path)
+    (tmp_path / "ssq.json").write_text(
+        json.dumps(
+            [
+                {
+                    "issue": "26058",
+                    "date": "2026-05-24",
+                    "red": ["01", "04", "07", "21", "29", "30"],
+                    "blue": ["01"],
+                    "source": "500.com",
+                }
+            ],
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+    (tmp_path / "dlt.json").write_text(
+        json.dumps(
+            [
+                {
+                    "issue": "26056",
+                    "date": "2026-05-23",
+                    "front": ["06", "07", "18", "21", "30"],
+                    "back": ["01", "05"],
+                    "source": "500.com",
+                }
+            ],
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+
+    latest_summary = upd.build_latest_summary(["ssq"])
+    upd.write_latest(latest_summary)
+
+    data = json.loads((tmp_path / "latest.json").read_text(encoding="utf-8"))
+    assert set(data["lotteries"]) == {"ssq", "dlt"}
+    assert data["lotteries"]["ssq"]["issue"] == "26058"
+    assert data["lotteries"]["dlt"]["issue"] == "26056"
+

@@ -2,9 +2,20 @@ name: Update lottery data
 
 on:
   schedule:
-    # UTC 14:05 = Beijing 22:05. Covers SSQ 21:15 and DLT 20:30 draw days.
-    - cron: "5 14 * * *"
+    # UTC 14:05 = Beijing 22:05.
+    # Draw days only: SSQ Sun/Tue/Thu; DLT Mon/Wed/Sat. Friday is skipped.
+    - cron: "5 14 * * 0,1,2,3,4,6"
   workflow_dispatch:
+    inputs:
+      lottery:
+        description: "Lottery to update"
+        required: false
+        default: "all"
+        type: choice
+        options:
+          - all
+          - ssq
+          - dlt
 
 permissions:
   contents: write
@@ -28,7 +39,7 @@ jobs:
         run: pytest -q
 
       - name: Fetch and merge lottery data
-        run: python scripts/update_lottery_data.py
+        run: python scripts/update_lottery_data.py --lottery "${{ inputs.lottery || 'all' }}"
 
       - name: Commit changes
         run: |

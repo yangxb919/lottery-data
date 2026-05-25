@@ -224,6 +224,46 @@ def update_one(code: str, end_issue: str) -> Dict[str, Any]:
     }
 
 
+def summarize_saved_lottery(code: str) -> Dict[str, Any]:
+    """Read a saved lottery JSON file and return the latest-summary shape."""
+    cfg = CONFIGS[code]
+    out_path = DATA_DIR / f"{code}.json"
+    records = read_json_list(out_path)
+    if not records:
+        raise LotteryDataError(f"{out_path} has no saved records")
+
+    try:
+        path_label = str(out_path.relative_to(ROOT))
+    except ValueError:
+        path_label = str(out_path)
+
+    return {
+        "code": code,
+        "name": cfg.name,
+        "path": path_label,
+        "saved": len(records),
+        "latest": records[0],
+    }
+
+
+def build_latest_summary(updated_codes: Iterable[str]) -> List[Dict[str, Any]]:
+    """Build latest.json from all saved files, not only this run's subset.
+
+    This keeps `data/latest.json` complete when a manual run updates only
+    `--lottery ssq` or `--lottery dlt`.
+    """
+    updated = set(updated_codes)
+    summary: List[Dict[str, Any]] = []
+    for code in CONFIGS:
+        out_path = DATA_DIR / f"{code}.json"
+        if code in updated or out_path.exists():
+            summary.append(summarize_saved_lottery(code))
+
+    if not summary:
+        raise LotteryDataError("no lottery data files available for latest summary")
+    return summary
+
+
 def write_latest(summary: List[Dict[str, Any]]) -> None:
     """Write a stable latest summary.
 
@@ -263,10 +303,10 @@ def main() -> int:
     args = parser.parse_args()
 
     codes = list(CONFIGS.keys()) if args.lottery == "all" else [args.lottery]
-    summary = [update_one(code, args.end_issue) for code in codes]
-    write_latest(summary)
+    updated_summary = [update_one(code, args.end_issue) for code in codes]
+    write_latest(build_latest_summary(codes))
 
-    print(json.dumps(summary, ensure_ascii=False, indent=2))
+    print(json.dumps(updated_summary, ensure_ascii=False, indent=2))
     return 0
 
 
