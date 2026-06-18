@@ -2,18 +2,18 @@
   "source": "500.com",
   "lotteries": {
     "ssq": {
-      "issue": "26068",
-      "date": "2026-06-16",
+      "issue": "26069",
+      "date": "2026-06-18",
       "red": [
-        "03",
-        "05",
+        "12",
+        "14",
         "16",
+        "17",
         "18",
-        "29",
         "32"
       ],
       "blue": [
-        "04"
+        "08"
       ],
       "source": "500.com"
     },
@@ -38,9 +38,9 @@
     {
       "code": "ssq",
       "name": "双色球",
-      "saved": 3465,
-      "latest_issue": "26068",
-      "latest_date": "2026-06-16"
+      "saved": 3466,
+      "latest_issue": "26069",
+      "latest_date": "2026-06-18"
     },
     {
       "code": "dlt",
